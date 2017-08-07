@@ -1,3 +1,6 @@
+# (c) 2016 DataNexus Inc.  All Rights Reserved.
+#
+# user variables; set as needed
 ---
 tenant: datanexus
 ec2_region: ap-southeast-2
