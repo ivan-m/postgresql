@@ -1,0 +1,12 @@
+# (c) 2016 DataNexus Inc.  All Rights Reserved.
+#
+# user variables; set as needed
+---
+cloud: aws
+tenant: datanexus
+project: demo
+application: postgresql
+ec2_region: ap-southeast-2
+cluster: a
+role: none
+dataflow: none
