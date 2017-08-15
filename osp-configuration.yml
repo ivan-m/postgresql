@@ -8,20 +8,32 @@ cloud: osp
 domain: production
 application: postgresql
 region: regionOne
+# optional
 cluster: a
+# optional
 replica: no
+# optional
 role: none
+# optional
 dataflow: none
 user: cloud-user
+ami: 1487de89-4f28-4c56-bdb3-15c425a1dbb7
 type: prod.xlarge
 root_volume: 11
+# optional
 data_volume: 20
+# required if data_volume defined
 block_pool: prod
-private_subnet: 0a82a8f4-9c36-4f3d-9a52-492b591f5a7f
-public_subnet: 4bdada86-dce1-4642-9cef-706b3e82c4cd
+interface_subnet: 0a82a8f4-9c36-4f3d-9a52-492b591f5a7f
 float_pool: external
-count: 1
-ami: 1487de89-4f28-4c56-bdb3-15c425a1dbb7
 zone: production -- could this be same as domain?
-private_interface_acl: open
-public_interface_acl: postgresql
+interface_acl: postgresql
+# optional
+http_proxy: yes
+# optional
+local_yum_repo: yes
+
+# testing only
+proxy_certs_file: eg-certs.tar.gz
+http_proxy_url: http://sys_sde_apps:Sw%40nLake9@proxy.auiag.corp:8080
+

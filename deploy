@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# set this to the desired AWS profile in ~/.aws/credentials
+export AWS_PROFILE=svx-ProdA
+
+./initialize -e "configuration=aws-configuration.yml"
+./provision-postgresql -e "configuration=aws-configuration.yml"

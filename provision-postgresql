@@ -5,37 +5,120 @@
 ---
 - name: launching AMI
   vars_files:
-    - configuration.yml
+    - "{{ configuration }}"
   hosts: localhost
   connection: local
   gather_facts: true
   roles:
-    - { role: ami }
+    - { role: aws, when: cloud == 'aws' }
+    - { role: osp, when: cloud == 'osp' }
 
 # do the auto discovery first as we use all the nodes for master/replica configuration
 - name: discovering all postgresql nodes
   vars_files:
-    - configuration.yml
+    - "{{ configuration }}"
   hosts: localhost
   tasks:
     - ec2_remote_facts:
-        region: "{{ ec2_region }}"
+        region: "{{ region }}"
         filters:
-          instance-state-name: running
-          "tag:Application": postgresql
+          instance-state-name: running          
           "tag:Tenant": "{{ tenant }}"
+          "tag:Project": "{{ project }}"
+          "tag:Domain": "{{ domain }}"
+          "tag:Application": postgresql
+          "tag:Cluster": "{{ cluster | default ('a') }}"
+#          "tag:Role": "{{ role | default ('none') }}"
+          "tag:Dataflow": "{{ dataflow | default ('none') }}"
       register: postgresql_instances
-    
+      when: cloud == 'aws'
+      
     - name: building postgresql host group
-      add_host: hostname="{{ item }}" groupname=postgresql ansible_user=centos ansible_ssh_private_key_file="./{{ ec2_region }}-postgresql-private-key.pem"
-      with_items: "{{ postgresql_instances.instances|map(attribute='public_ip_address')|list }}"
+      add_host: hostname="{{ item }}" groupname=postgresql ansible_user="{{ user }}" ansible_ssh_private_key_file="./{{ region }}-postgresql-private-key.pem"
+      with_items: "{{ postgresql_instances.instances | map (attribute='private_ip_address') | list }}"
       when:
+        - postgresql_instances is defined
         - postgresql_instances.instances|length > 0
 
-- name: install base postgresql
+- name: discovering all postgresql master nodes
+  vars_files:
+    - "{{ configuration }}"
+  hosts: localhost
+  tasks:
+    - ec2_remote_facts:
+        region: "{{ region }}"
+        filters:
+          instance-state-name: running          
+          "tag:Tenant": "{{ tenant }}"
+          "tag:Project": "{{ project }}"
+          "tag:Domain": "{{ domain }}"
+          "tag:Application": postgresql
+          "tag:Cluster": "{{ cluster | default ('a') }}"
+          "tag:Role": master
+          "tag:Dataflow": "{{ dataflow | default ('none') }}"
+      register: postgresql_master_instances
+      when: cloud == 'aws'
+      
+    - name: building postgresql host group
+      add_host: hostname="{{ item }}" groupname=postgresql_master ansible_user="{{ user }}" ansible_ssh_private_key_file="./{{ region }}-postgresql-private-key.pem"
+      with_items: "{{ postgresql_master_instances.instances | map (attribute='private_ip_address') | list }}"
+      when:
+        - cloud == 'aws'
+        - postgresql_master_instances is defined
+        - postgresql_master_instances.instances|length > 0
+
+- name: discovering all postgresql replica nodes
+  vars_files:
+    - "{{ configuration }}"
+  hosts: localhost
+  tasks:
+    - ec2_remote_facts:
+        region: "{{ region }}"
+        filters:
+          instance-state-name: running          
+          "tag:Tenant": "{{ tenant }}"
+          "tag:Project": "{{ project }}"
+          "tag:Domain": "{{ domain }}"
+          "tag:Application": postgresql
+          "tag:Cluster": "{{ cluster | default ('a') }}"
+          "tag:Role": replica
+          "tag:Dataflow": "{{ dataflow | default ('none') }}"
+      register: postgresql_replica_instances
+      when: cloud == 'aws'
+      
+    - name: building postgresql host group
+      add_host: hostname="{{ item }}" groupname=postgresql_replica ansible_user="{{ user }}" ansible_ssh_private_key_file="./{{ region }}-postgresql-private-key.pem"
+      with_items: "{{ postgresql_replica_instances.instances | map (attribute='private_ip_address') | list }}"
+      when:
+        - cloud == 'aws'
+        - postgresql_replica_instances is defined
+        - postgresql_replica_instances.instances|length > 0
+                        
+- name: installing base postgresql application
   hosts: postgresql
   vars_files:
-      - vars/postgresql.yml
+    - "{{ configuration }}"
+    - vars/postgresql.yml
   gather_facts: yes
   roles:
+    - { role: preflight, mountpoint: "/data", when: data_volume is defined }
+    - { role: http-proxy, when: http_proxy }
     - { role: postgresql }
+
+- name: configuring postgresql master
+  hosts: postgresql_master
+  gather_facts: no
+  vars_files:
+    - "{{ configuration }}"
+    - vars/postgresql.yml
+  roles:
+    - { role: master-streaming }
+
+- name: configuring postgresql replica
+  hosts: postgresql_replica
+  gather_facts: no
+  vars_files:
+    - "{{ configuration }}"
+    - vars/postgresql.yml
+  roles:
+    - { role: replica-streaming }

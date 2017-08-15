@@ -4,7 +4,7 @@
 - include: facts.yml
 - include: interface-facts.yml
 
-- name: installing postgresql packages
+- name: installing postgresql and epel repos
   become: true
   package:
     name: "{{ item }}"
@@ -12,6 +12,29 @@
   with_items:
     - 'https://download.postgresql.org/pub/repos/yum/{{ postgresql_major_version }}.{{ postgresql_minor_version }}/redhat/rhel-7-x86_64/pgdg-{{ ansible_distribution|lower }}{{ postgresql_major_version }}{{ postgresql_minor_version }}-{{ postgresql_major_version }}.{{ postgresql_minor_version }}-3.noarch.rpm'
     - epel-release-7-9
+
+# - name: configuring repo proxies
+#   blockinfile:
+#     name: "/etc/yum.repos.d/pgdg-{{ postgresql_major_version }}{{ postgresql_minor_version }}-redhat.repo"
+#     mode: 0644
+#     create: no
+#     block: |
+#       [pgdg{{ postgresql_major_version }}{{ postgresql_minor_version }}]
+#       name=PostgreSQL {{ postgresql_major_version }}.{{ postgresql_minor_version }} $releasever - $basearch
+#       baseurl=https://download.postgresql.org/pub/repos/yum/{{ postgresql_major_version }}.{{ postgresql_minor_version }}/redhat/rhel-$releasever-$basearch
+#       enabled=1
+#       gpgcheck=1
+#       gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-PGDG-96
+#       proxy={{ http_proxy_url }}
+#   when:
+#     - local_yum_repo
+
+- name: installing postgresql packages
+  become: true
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
     - "python-psycopg2-{{ python_postgres_adapter_version }}.el7"
     - "postgresql{{ postgresql_major_version }}{{ postgresql_minor_version }}-{{ postgresql_version }}{{ postgresql_rpm_info }}"
     - "postgresql{{ postgresql_major_version }}{{ postgresql_minor_version }}-server-{{ postgresql_version }}{{ postgresql_rpm_info }}"

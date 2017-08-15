@@ -4,3 +4,5 @@
 ansible.log
 .DS_Store
 *.retry
+# any proxy code needed
+http-proxy

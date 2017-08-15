@@ -1,0 +1,20 @@
+#!/usr/bin/env ansible-playbook
+# (c) 2016 DataNexus Inc.  All Rights Reserved.
+#
+# Default manifest for launching basic AMI
+---
+- name: grabbing any additional repositories necessary
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - "{{ configuration }}"
+  vars:
+    owner: "{{ github | default ('datanexus') }}"
+  tasks:
+    - name: cloning https://github.com/{{ owner }}/http-proxy
+      git:
+        repo: "https://github.com/{{ owner }}/http-proxy.git"
+        update: yes
+        dest: http-proxy
+      when: http_proxy
