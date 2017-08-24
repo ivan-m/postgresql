@@ -1,10 +1,12 @@
-# (c) Copyright 2016 DataNexus Inc.  All Rights Reserved. 
+# (c) Copyright 2016 DataNexus Inc.  All Rights Reserved.
+#
+#
 ---    
-# Facts configuration.
+# facts configuration.
 - include: facts.yml
 - include: interface-facts.yml
 
-- name: installing postgresql packages
+- name: installing postgresql and epel repos
   become: true
   package:
     name: "{{ item }}"
@@ -12,6 +14,13 @@
   with_items:
     - 'https://download.postgresql.org/pub/repos/yum/{{ postgresql_major_version }}.{{ postgresql_minor_version }}/redhat/rhel-7-x86_64/pgdg-{{ ansible_distribution|lower }}{{ postgresql_major_version }}{{ postgresql_minor_version }}-{{ postgresql_major_version }}.{{ postgresql_minor_version }}-3.noarch.rpm'
     - epel-release-7-9
+
+- name: installing postgresql packages
+  become: true
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
     - "python-psycopg2-{{ python_postgres_adapter_version }}.el7"
     - "postgresql{{ postgresql_major_version }}{{ postgresql_minor_version }}-{{ postgresql_version }}{{ postgresql_rpm_info }}"
     - "postgresql{{ postgresql_major_version }}{{ postgresql_minor_version }}-server-{{ postgresql_version }}{{ postgresql_rpm_info }}"
@@ -19,13 +28,13 @@
     - "postgresql{{ postgresql_major_version }}{{ postgresql_minor_version }}-libs-{{ postgresql_version }}{{ postgresql_rpm_info }}"
 
 - block:
-  - name: set PostgreSQL environment variables
+  - name: setting PostgreSQL environment variables
     template:
       src: postgres.sh.j2
       dest: /var/lib/pgsql/.pgsql_profile
       mode: 0644
 
-  - name: apply postgresql customizations
+  - name: applying postgresql customizations
     blockinfile:
       name: "/etc/systemd/system/postgresql-{{ postgresql_major_version }}.{{ postgresql_minor_version }}.service"
       mode: 0644
@@ -35,17 +44,16 @@
         [Service]
         Environment=PGDATA={{ postgresql_data_dir }}
 
-  - name: check if PostgreSQL database is initialized
+  - name: checking if PostgreSQL database is initialized
     stat:
       path: "{{ postgresql_data_dir }}/PG_VERSION"
     register: pgdata_dir_version
 
-  - name: initialize {{ postgresql_data_dir }}
+  - name: initializing {{ postgresql_data_dir }}
     command: "{{ postgresql_bin_path }}/postgresql{{ postgresql_major_version }}{{ postgresql_minor_version }}-setup initdb"
     when: not pgdata_dir_version.stat.exists
 
-
-  - name: listen on {{ postgresql_interface_ipv4 }}
+  - name: listening on {{ postgresql_interface_ipv4 }}
     lineinfile:
       dest: "{{ postgresql_config_path }}/postgresql.conf"
       regexp: "^#?listen_addresses"
@@ -54,7 +62,7 @@
     with_items: "{{ postgresql_interface_ipv4 }}"
     notify: restart postgresql        
  
-  - name: Configure global settings.
+  - name: configuring global settings.
     lineinfile:
       dest: "{{ postgresql_config_path }}/postgresql.conf"
       regexp: "^#?{{ item.option }}.+$"
@@ -63,7 +71,7 @@
     with_items: "{{ postgresql_global_config_options }}"
     notify: restart postgresql
   
-  - name: ensure PostgreSQL unix socket dirs exist
+  - name: ensuring PostgreSQL unix socket dirs exist
     file:
       path: "{{ item }}"
       state: directory
@@ -72,7 +80,7 @@
       mode: 02775
     with_items: "{{ postgresql_unix_socket_directories }}"
 
-  - name: update SE Linux enforcing mode
+  - name: updating SE Linux enforcing mode
     sefcontext:
       target: "{{ postgresql_data_dir }}(/.*)?"
       setype: postgresql_db_t
@@ -81,15 +89,15 @@
     when: ansible_selinux.status == "enabled"
       
   # sefcontent does not restore the context, so we need another step       
-  - name: Restore SE Linux security context
+  - name: restoring SE Linux security context
     command: /sbin/restorecon -R {{ postgresql_data_dir }}
     when: ansible_selinux.status == "enabled"
   
-  - name: Ensure PostgreSQL is started and enabled on boot
+  - name: ensuring postgresql is started and enabled on boot
     systemd: "name={{ postgresql_daemon }} state=started enabled=True"
   
-  # Configure PostgreSQL.
-  - name: Ensure PostgreSQL databases are present
+  # configure postgreql
+  - name: ensuring postgresql databases are present
     postgresql_db:
       name: "{{ item.name }}"
       lc_collate: "{{ item.lc_collate | default('en_US.UTF-8') }}"
@@ -105,7 +113,7 @@
     with_items: "{{ postgresql_databases }}"
     become_user: "{{ postgresql_user }}"
 
-  - name: Ensure PostgreSQL users are present
+  - name: ensuring postgresql users are present
     postgresql_user:
       name: "{{ item.name }}"
       password: "{{ item.password | default(omit) }}"

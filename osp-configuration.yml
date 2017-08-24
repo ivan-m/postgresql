@@ -1,27 +1,27 @@
 # (c) 2016 DataNexus Inc.  All Rights Reserved.
 #
-# example osp instance
+# example OSP instance
 ---
-tenant: iag_prod
-project: datamart
 cloud: osp
-domain: production
+tenant: TENANT
+project: PROJECT
+domain: DOMAIN
 application: postgresql
-region: regionOne
-cluster: a
-replica: no
-role: none
-dataflow: none
-user: cloud-user
-type: prod.xlarge
-root_volume: 11
-data_volume: 20
-block_pool: prod
-private_subnet: 0a82a8f4-9c36-4f3d-9a52-492b591f5a7f
-public_subnet: 4bdada86-dce1-4642-9cef-706b3e82c4cd
-float_pool: external
-count: 1
-ami: 1487de89-4f28-4c56-bdb3-15c425a1dbb7
-zone: production -- could this be same as domain?
-private_interface_acl: open
-public_interface_acl: postgresql
+region: OSP_REGION
+cluster: CLUSTER
+replica: REPLICA
+role: ROLE
+dataflow: DATAFLOW
+user: USER
+ami: AMI_UUID
+type: TYPE
+root_volume: SIZE
+data_volume: SIZE
+block_pool: POOL
+internal_uuid: SUBNET_UUID
+external_uuid: SUBNET_UUID
+internal_subnet: SUBNET
+external_subnet: SUBNET
+float_pool: FLOAT
+zone: ZONE 
+http_proxy: PROXY

@@ -2,22 +2,22 @@
 #
 # example AWS instance
 ---
-tenant: svx-ProdA
-project: keller
-cloud: aws
-domain: production
+cloud: aws  
+tenant: AWS_PROFILE
+project: PROJECT
+domain: DOMAIN
 application: postgresql
-region: ap-southeast-2
-cluster: a
-replica: no
-role: none
-dataflow: none
-user: centos
-ami: ami-34171d57
-type: t2.micro
-root_volume: 11
-data_volume: 20
-cidr_block: 10.103.2.0/23
-interface_subnet: 10.103.2.128/26
-count: 1
-interface_acl: postgresql
+region: AWS_REGION
+cluster: CLUSTER
+replica: REPLICA
+role: ROLE
+dataflow: DATAFLOW
+user: USER
+ami: AMI
+type: TYPE
+root_volume: SIZE
+data_volume: SIZE
+cidr_block: CIDR_BLOCK
+internal_subnet: SUBNET
+external_subnet: SUBNET
+http_proxy: PROXY

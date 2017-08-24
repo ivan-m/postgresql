@@ -1,0 +1,19 @@
+#!/bin/sh
+# (c) 2016 DataNexus Inc.  All Rights Reserved.
+
+if [ "$1" == "-h" ] ; then
+    echo "Usage:  `basename $0` [-h]\t\thelp"
+    echo "\t`basename $0` [aws | osp]\ttest either aws or osp deployment"
+    exit 0
+fi
+
+if [ $1 == "aws" ]; then
+  export cloud=aws
+  export AWS_PROFILE=svx-ProdA    # set this to the desired AWS profile in ~/.aws/credentials
+elif [ $1 == "osp" ]; then
+  export cloud=osp
+  export hostfile="-i `/bin/ls *.hostfile`"
+fi
+
+echo "testing $cloud instance(s)..."
+./test-postgresql $hostfile -e "configuration=$cloud-configuration.yml"
