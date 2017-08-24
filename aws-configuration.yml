@@ -2,35 +2,22 @@
 #
 # example AWS instance
 ---
-tenant: svx-ProdA
-project: keller
-cloud: aws
-domain: production
+cloud: aws  
+tenant: AWS_PROFILE
+project: PROJECT
+domain: DOMAIN
 application: postgresql
-region: ap-southeast-2
-# optional
-cluster: a
-# optional
-replica: no
-# optional
-role: none
-# optional
-dataflow: none
-user: centos
-ami: ami-34171d57
-type: t2.micro
-root_volume: 11
-# optional
-data_volume: 20
-cidr_block: 10.103.2.0/23
-interface_subnet: 10.103.2.128/26
-interface_acl: postgresql
-# optional
-http_proxy: yes
-# optional
-local_yum_repo: no
-
-# testing only
-proxy_certs_file: eg-certs.tar.gz
-http_proxy_url: http://sys_sde_apps:Sw%40nLake9@proxy.auiag.corp:8080
-no_proxy: '*.auiag.corp,*.local,*.customerlabs.com.au,10/8'
+region: AWS_REGION
+cluster: CLUSTER
+replica: REPLICA
+role: ROLE
+dataflow: DATAFLOW
+user: USER
+ami: AMI
+type: TYPE
+root_volume: SIZE
+data_volume: SIZE
+cidr_block: CIDR_BLOCK
+internal_subnet: SUBNET
+external_subnet: SUBNET
+http_proxy: PROXY

@@ -6,3 +6,5 @@ ansible.log
 *.retry
 # any proxy code needed
 http-proxy
+# any OSP host files
+*.hostfile

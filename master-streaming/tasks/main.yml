@@ -3,11 +3,11 @@
 # streaming tasks for the master
 ---
 - block:
-  # this needs to be the data network on eth1  
+  # this needs to be the internal public network 
   - name: configure replication user
     lineinfile:
       dest: "{{ postgresql_config_path }}/pg_hba.conf"
-      line: "host     replication     replicator      {{ hostvars[item].ansible_eth0.ipv4.address }}/32         md5"
+      line: "host     replication     replicator      {{ hostvars[item].ansible_eth1.ipv4.address }}/32         md5"
     become: true
     with_items: "{{ groups.postgresql_replica }}"
     notify: restart postgresql  

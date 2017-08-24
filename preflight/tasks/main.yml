@@ -1,7 +1,40 @@
 # (c) 2016 DataNexus Inc.  All Rights Reserved.
 #
-# OS tasks that are post-boot and pre-appplication
+# OS tasks that occur post-boot and pre-appplication installation
 ---
+
+# in a dual interface system, eth1 is always public internal
+- set_fact:
+    public_internal_interface: eth1
+  when:
+    - external_subnet is defined
+
+- name: adding ifcfg-{{ public_internal_interface }} script
+  become: true
+  command: /usr/bin/cp /etc/sysconfig/network-scripts/ifcfg-eth0 "/etc/sysconfig/network-scripts/ifcfg-{{ public_internal_interface }}" creates="/etc/sysconfig/network-scripts/ifcfg-{{ public_internal_interface }}" 
+  when:
+    - ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
+    - public_internal_interface is defined
+
+- name: configuring ifcfg-{{ public_internal_interface }} interface
+  become: true
+  lineinfile: name="/etc/sysconfig/network-scripts/ifcfg-{{ public_internal_interface }}" regexp='^DEVICE=' line='DEVICE="{{ public_internal_interface }}"'
+  when:
+    - ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
+    - public_internal_interface is defined
+
+- name: configuring no default route on eth0 for {{ application }}
+  become: true
+  lineinfile: name="/etc/sysconfig/network-scripts/ifcfg-eth0" regexp='^DEFROUTE=' line='DEFROUTE="no"'
+  when:
+    - ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
+    - public_internal_interface is defined
+
+- name: restart networking
+  become: true
+  systemd: "name=network state=restarted"
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
+      
 - set_fact:
     block_device: /dev/xvdb
   when:
@@ -12,14 +45,19 @@
   when:
     - cloud == 'osp'
 
-- block:       
-  - name: making filesystem
-    filesystem: fstype=ext4 dev="{{ block_device }}" opts="-E nodiscard"
+- block:
+  # the ansible filesystem module was succeeding without errors, but the resulting filesystem was unmountable
+  - name: making filesystem on {{ block_device }}
+    command: /usr/sbin/mkfs -t ext4 {{ block_device }}
 
   - name: mount data volumes
-    mount: name="{{ mountpoint }}" src="{{ block_device }}" fstype=ext4 opts='discard' state=mounted
+    mount:
+      name: "{{ mountpoint }}"
+      src: "{{ block_device }}"
+      fstype: ext4
+      state: mounted
   become: true
-
+  
 - name: ensure sshd_config is writable
   command: /bin/chattr -i /etc/ssh/sshd_config
   become: true

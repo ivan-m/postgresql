@@ -3,7 +3,7 @@
 # streaming tasks for the replica
 ---
 - block:
-    - name: Preserve postgresql.conf
+    - name: preserving postgresql.conf
       command: /bin/cp {{ postgresql_config_path }}/postgresql.conf /tmp
       become_user: "{{ postgresql_user }}"
        
@@ -29,13 +29,14 @@
         mode: 0700      
     
     - set_fact:
-        master_address: "{{ hostvars[item].ansible_eth0.ipv4.address }}"
+        master_address: "{{ hostvars[item].ansible_eth1.ipv4.address }}"
       with_items: "{{ groups.postgresql_master }}"
       when:
         - cloud == 'aws'
-
+    
+    # this won't work outside the same subnet because we need the master EIP/float
     - set_fact:
-        master_address: "{{ hostvars[item].osp_floating_ip }}"
+        master_address: "{{ hostvars[item].public_internal }}"
       with_items: "{{ groups.postgresql_master }}"  
       when:
         - cloud == 'osp'
@@ -70,7 +71,7 @@
       become_user: "{{ postgresql_user }}"
       with_items: "{{ groups.postgresql_master }}"
       
-    - name: Fix SE Linux labels on {{ postgresql_data_dir }}
+    - name: fixign SE Linux labels on {{ postgresql_data_dir }}
       command: /usr/sbin/fixfiles -F restore "{{ postgresql_data_dir }}"
 
     - name: configure write ahead log for streaming
