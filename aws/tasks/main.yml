@@ -130,7 +130,6 @@
       mode: 0400
   when:
     - not existing_key.stat.exists
-    - keypair.changed
 
 # always boot a single postgresql server
 - name: setting count to single node
