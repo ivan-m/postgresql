@@ -34,9 +34,9 @@ Replace REPLICA with a `yes` or `no` to indicate whether you want a standalone s
 Replace USER with `centos` for CentOS or `redhat` for RHEL.
 
     user: USER
-Replace AMI with the AMI ID in the region you wish to deploy; Centos 7.3 or RHEL 7.3.
+Replace AMI with the AMI ID in the region you wish to deploy; Centos 7.3 or RHEL 7.3 are supported. If commented out or removed, CentOS 7.3 will be booted.
 
-    ami: AMI
+    image: AMI
 Replace SIZE with  `t2.micro`, `t2.small`, `t2.medium`, `t2.large`, `t2.xlarge`, `t2.x2large`,  or another value from [here](https://aws.amazon.com/ec2/instance-types/).
 
     type: SIZE
@@ -88,9 +88,9 @@ Replace REPLICA with a `yes` or `no` to indicate whether you want a standalone s
 Replace USER with `centos` for CentOS or `redhat` for RHEL.
 
     user: USER
-Replace AMI with the AMI UUID you wish to boot.
+Replace IMAGE_UUID with the UUID of the image you wish to boot.
 
-    ami: AMI_UUID
+    image: IMAGE_UUID
 Replace SIZE with  configured virtual machine size.
 
     type: TYPE

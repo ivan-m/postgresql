@@ -159,7 +159,7 @@
       Dataflow: "{{ dataflow }}"    
     region_name: "{{ region }}"
     availability_zone: "{{ zone }}"
-    image: "{{ ami }}"
+    image: "{{ image }}"
     key_name: "{{ osp_keypair.key.name }}"
     timeout: 200
     auto_ip: yes
@@ -206,7 +206,7 @@
         Dataflow: "{{ dataflow }}"    
       region_name: "{{ region }}"
       availability_zone: "{{ zone }}"
-      image: "{{ ami }}"
+      image: "{{ image }}"
       key_name: "{{ osp_keypair.key.name }}"
       timeout: 200
       auto_ip: yes

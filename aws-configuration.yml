@@ -13,7 +13,7 @@ replica: REPLICA
 role: ROLE
 dataflow: DATAFLOW
 user: USER
-ami: AMI
+image: AMI
 type: TYPE
 root_volume: SIZE
 data_volume: SIZE

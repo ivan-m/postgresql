@@ -3,7 +3,7 @@
 #
 # main routine for provisioning postgresql
 ---
-- name: launching AMI
+- name: launching VM
   vars_files:
     - "{{ configuration }}"
   hosts: localhost
