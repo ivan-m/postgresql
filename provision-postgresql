@@ -3,7 +3,7 @@
 #
 # main routine for provisioning postgresql
 ---
-- name: launching AMI
+- name: launching VM
   vars_files:
     - "{{ configuration }}"
   hosts: localhost
@@ -22,7 +22,7 @@
   gather_facts: yes
   roles:
     - { role: preflight, mountpoint: "/data", when: data_volume is defined }
-    - { role: http-proxy, when: http_proxy }
+    - { role: http-proxy, when: http_proxy is defined }
 
 - name: installing base postgresql application
   hosts: postgresql
@@ -50,3 +50,4 @@
     - vars/postgresql.yml
   roles:
     - { role: replica-streaming }
+

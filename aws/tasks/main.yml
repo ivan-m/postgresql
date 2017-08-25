@@ -53,9 +53,9 @@
     register: amis_found
 
   - set_fact:
-      ami: "{{ amis_found.results[0].ami_id }}"
+      image: "{{ amis_found.results[0].ami_id }}"
   when:
-    - ami is not defined
+    - image is not defined
 
 - name: creating ssh security group
   local_action:
@@ -130,7 +130,6 @@
       mode: 0400
   when:
     - not existing_key.stat.exists
-    - keypair.changed
 
 # always boot a single postgresql server
 - name: setting count to single node
@@ -149,7 +148,7 @@
     key_name: "{{ keypair.key.name }}"
     group_id: "{{ sg_ssh.group_id }}"
     instance_type: "{{ type }}"
-    image: "{{ ami }}"
+    image: "{{ image }}"
     vpc_subnet_id: "{{ internal_subnet_id }}"
     region: "{{ region }}"
     assign_public_ip: no
