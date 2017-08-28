@@ -33,6 +33,7 @@
       src: postgres.sh.j2
       dest: /var/lib/pgsql/.pgsql_profile
       mode: 0644
+    become: yes
 
   - name: applying postgresql customizations
     blockinfile:
@@ -95,3 +96,4 @@
   
   - name: ensuring postgresql is started and enabled on boot
     systemd: "name={{ postgresql_daemon }} state=started enabled=True"
+  become: true
