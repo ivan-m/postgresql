@@ -1,7 +1,7 @@
 #!/usr/bin/env ansible-playbook
 # (c) 2016 DataNexus Inc.  All Rights Reserved.
 #
-# Default manifest for launching basic AMI
+# clone http_proxy code
 ---
 - name: grabbing any additional repositories necessary
   hosts: localhost
@@ -17,4 +17,3 @@
         repo: "https://github.com/{{ owner }}/http-proxy.git"
         update: yes
         dest: http-proxy
-      when: http_proxy
