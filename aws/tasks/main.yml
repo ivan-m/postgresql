@@ -260,7 +260,23 @@
   when:
     - not ec2 | skipped and ec2.changed and ec2.instances | length > 0
     - replica
-    
+
+- name: configuring ssh for {{ application }} access
+  blockinfile:
+    state: present
+    create: yes
+    insertafter: EOF
+    path: "{{ ansible_env.HOME }}/.ssh/config"
+    marker: "# postgresl {mark} ANISBLE MANAGED BLOCK"
+    block: |
+      Host dn_postgresql
+          Hostname {{ ec2.instances.0.private_ip }}
+          User centos
+          IdentityFile {{ ansible_env.PWD }}/{{ keypair.key.name }}-private-key.pem
+          StrictHostKeyChecking no
+  when:
+    - not ec2 | skipped and ec2.changed and ec2.instances | length > 0
+      
 - name: building {{ application }}_replica host group
   add_host: hostname="{{ ec2.instances.1.private_ip }}" groups=postgresql_replica ansible_ssh_private_key_file="./{{ keypair.key.name }}-private-key.pem"
   when:
