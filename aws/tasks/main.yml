@@ -239,9 +239,9 @@
   local_action:
     module: ec2_eip
     state: present
-    in_vpc: true
-    release_on_disassociation: true
-    reuse_existing_ip_allowed: true
+    in_vpc: yes
+    release_on_disassociation: yes
+    reuse_existing_ip_allowed: yes
     region: "{{ region }}"
     device_id: "{{ item.interface.id }}"
   with_items: "{{ public_eni.results }}"
@@ -267,13 +267,14 @@
     create: yes
     insertafter: EOF
     path: "{{ ansible_env.HOME }}/.ssh/config"
-    marker: "# postgresl {mark} ANISBLE MANAGED BLOCK"
+    marker: "# {{ application }} {mark} ANSIBLE MANAGED BLOCK"
     block: |
       Host dn_postgresql
           Hostname {{ ec2.instances.0.private_ip }}
           User centos
           IdentityFile {{ ansible_env.PWD }}/{{ keypair.key.name }}-private-key.pem
           StrictHostKeyChecking no
+          ProxyCommand ssh dn_jumphost -W %h:%p
   when:
     - not ec2 | skipped and ec2.changed and ec2.instances | length > 0
       

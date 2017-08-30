@@ -15,7 +15,4 @@ else
   export configuration="$1"
 fi
 
-./initialize -e "configuration=$configuration"
-echo "running with $configuration configuration..."
-./provision-postgresql -e "configuration=$configuration"
-
+./cleanup-postgresql -e "configuration=$configuration"
