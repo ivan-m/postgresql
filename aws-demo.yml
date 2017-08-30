@@ -3,7 +3,7 @@ tenant: datanexus
 project: demo
 domain: development
 application: postgresql
-region: ap-northeast-2
+region: us-east-1
 cluster: a
 replica: yes
 role: none
