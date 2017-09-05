@@ -3,7 +3,7 @@
 application: postgresql
 postgresql_major_version: 9
 postgresql_minor_version: 6
-postgresql_rev_version: "3-1"
+postgresql_rev_version: "5-1"
 #postgresql_rpm_info: "PGDG.rhel7.x86_64.rpm"
 postgresql_rpm_info: "PGDG.rhel7"
 postgresql_version: "{{ postgresql_major_version }}.{{ postgresql_minor_version }}.{{ postgresql_rev_version }}"
