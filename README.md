@@ -51,11 +51,8 @@ Replace CIDR_BLOCK and SUBNET with the values in the VPC, e.g., 172.31.0.0/16, 1
     external_subnet: SUBNET
 (if needed) Replace  PROXY with `yes` or `no` if there is an HTTP proxy involved in getting to the internet.
  
-    http_proxy: PROXY
-(if needed) Replace USER, PASSWORD, DOMAIN, PORT with the necessary values.
+    http_proxy: http://USER:PASSWORD@DOMAIN:PORT
     
-    http_proxy_url: http://USER:PASSWORD@DOMAIN:PORT
-
 ### osp
 Certain _key:value_ pairs can be configured per project. Others should remain fixed for all projects.
 
@@ -117,10 +114,7 @@ Replace ZONE with the configured OSP zone.
     zone: ZONE 
 (if needed) Replace USER, PASSWORD, DOMAIN, PORT with the necessary values.
 
-    http_proxy: yes
-(if needed) Replace USER, PASSWORD, DOMAIN, PORT with the necessary values.
-    
-    http_proxy_url: http://USER:PASSWORD@DOMAIN:PORT
+    http_proxy: http://USER:PASSWORD@DOMAIN:PORT
     
 ## deployment
 ### amazon web services
