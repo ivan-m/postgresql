@@ -51,7 +51,7 @@
 - name: checking {{ region }}-{{ application }}-private-key.pem
   stat: path="./{{ region }}-{{ application }}-private-key.pem"
   register: existing_key
-    
+
 # use existing SSH key
 - name: using existing {{ region}}-{{ application }}
   os_keypair:
@@ -65,20 +65,20 @@
 
 # create new SSH key
 - block:    
-  - name: creating {{ region}}-{{ application }}
+  - name: creating {{ region }}-{{ application }}
     os_keypair:
       cloud: "{{ tenant }}"
       state: present
       name: "{{ region }}-{{ application }}"
     register: new_osp_keypair
-    
+
   - name: saving {{ region }}-{{ application }}
     copy:
       dest: "./{{ new_osp_keypair.key.name }}-private-key.pem"
       content: "{{ new_osp_keypair.key.private_key }}"
       mode: 0400
     when:
-      - osp_keypair.changed
+      - new_osp_keypair.changed
   
   - name: saving {{ region }}-{{ application }}
     copy:
@@ -86,10 +86,10 @@
       content: "{{ new_osp_keypair.key.public_key }}"
       mode: 0400
     when:
-      - osp_keypair.changed 
+      - new_osp_keypair.changed  
   when:
     - not existing_key.stat.exists
-
+  
 # sigh @ ansible for making me do this
 - set_fact:
     osp_keypair: "{{ existing_osp_keypair }}"

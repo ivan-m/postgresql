@@ -1,9 +1,9 @@
 cloud: aws
-tenant: datanexus
+tenant: iag_firemark
 project: demo
 domain: development
 application: postgresql
-region: us-east-1
+region: ap-southeast-2
 cluster: a
 replica: yes
 role: none

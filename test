@@ -15,6 +15,7 @@ elif [ $1 == "osp" ]; then
   export hostfile="-i `/bin/ls *.hostfile`"
 else
   export AWS_PROFILE=datanexus    # set this to the desired AWS profile in ~/.aws/credentials
+  export hostfile="-i `/bin/ls *.hostfile`"
   export configuration=$1
 fi
 
