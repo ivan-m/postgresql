@@ -1,5 +1,5 @@
 cloud: aws
-tenant: iag_firemark
+tenant: datanexus
 project: demo
 domain: development
 application: postgresql
